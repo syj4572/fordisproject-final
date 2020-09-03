@@ -1,0 +1,59 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block content %}
+<section class="projects-section bg-light" id="board">
+<div class="container">
+
+    <h1 class="text-center">Q & A</h1>
+    <p>모두가 사용하는 공간입니다. 욕설과 폭언은 삼가해 주세요.</p>
+
+    <hr>
+
+    <table class="table table-hover">
+        <thead>
+          <tr class="table-primary" style="color:black">
+              <th>번호</th>
+              <th>상태</th>
+              <th>제목</th>
+              <th>작성자</th>
+              <th>등록일</th>
+          </tr>
+        </thead>
+        <tbody>
+        {%for qnaboard in qnalist %}
+          <tr>
+            <td>{{qnaboard.pk}}</td>
+            <td>
+                {% if qnaboard.admin_content == "" %}
+                대기
+                {% else %}
+                완료
+                {% endif %}
+            </td>
+            <td><a href="{% url 'qnadetail' qnaboard.pk %}">{{ qnaboard.title }}</a></td>
+            <td>{{qnaboard.qnawriter.nickName}}님</td>
+            <td>{{qnaboard.created_at}}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h6 class="text-center">
+        {% if qnalist.has_previous %}
+            <a href="?page={{qnalist.number|add:-1}}">이전페이지</a>
+        {% endif %}
+            Page {{qnalist.number}} / {{ qnalist.paginator.num_pages}}
+        {% if qnalist.has_next %}
+            <a href="?page={{qnalist.number|add:+1}}">다음페이지</a>
+        {% endif %}
+    </h6>
+
+        <div style="float:right; display: inline-block"><img style="float:left; " width="22" src="/static/assets/img/boardwrite2.png" >
+            <a href="{% url 'qnacreate' %}"><h5 style="float:right;">글쓰기</h5></a>
+        </div>
+    </div>
+</div>
+</section>
+{% endblock %}
+

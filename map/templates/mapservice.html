@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<div>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Google Maps Multiple Markers</title>
+  <script src="http://maps.google.com/maps/api/js?key=AIzaSyA5BlqMmVTyp5F06gdGS9rHkr_McFdrI_c"
+          type="text/javascript">
+  </script>
+    <h2>전동휠체어 충전소 & 장애인 화장실 위치</h2>
+    <br>
+  <div>
+    <button type="submit" id="washmap">장애인 화장실 찾기</button>
+    <button type="submit" id="wheelchair">전동휠체어 충전소 찾기</button>
+    <button id="reset" type="reset">모두 지우기</button></div>
+  </div>
+    <br>
+    </head>
+<body>
+  <div id="map" style="width: 700px; height: 600px;"></div>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript">
+
+    //지도 생성, 처음 띄웠을 때 위치(center)
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 12,
+      center: new google.maps.LatLng(37.549012, 126.988546),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+
+    //보여줄 icon(마커) url. 각각 휠체어, 화장실 순서
+
+    var icon = 'http://maps.google.com/mapfiles/ms/icons/wheel_chair_accessible.png';
+    var icon1 = 'http://maps.google.com/mapfiles/ms/micons/toilets.png';
+
+  // 전동휠체어 찾기 버튼 클릭했을 때,
+  $('#wheelchair').click(function(k){
+      $.getJSON("{% url 'w_map' %}?w_map="+k, function(jsonObj){
+          var length = jsonObj.w_map_location.length;
+          var w_map_x = 0;
+          var w_map_y = 0;
+          for(var i=0; i < length; i++){
+              w_map_location = jsonObj.w_map_location[i];
+              w_map_tel = jsonObj.w_map_tel[i];
+              w_map_x = parseFloat(jsonObj.w_map_x[i]);
+              w_map_y = parseFloat(jsonObj.w_map_y[i]);
+              w_map_info = jsonObj.w_map_info[i];
+             marker = new google.maps.Marker({
+                id:i,
+                position: new google.maps.LatLng(w_map_y, w_map_x),
+                map: map,
+                icon:icon
+             });
+          // infoindow 사용해서 마커를 클릭했을 때 메시지 창 보이기
+          var infowindow = new google.maps.InfoWindow();
+          google.maps.event.addListener(marker, 'click', (function(marker, i) {
+          return function() {
+          infowindow.setContent('주소: '+w_map_location+', '+w_map_info+','+w_map_tel);
+          infowindow.open(map, marker);
+          }
+          })(marker, i));
+          // 마커를 클릭했을 때 줌 이벤트
+          if(marker) {
+            marker.addListener('click', function() {
+              map.setZoom(15);
+              map.setCenter(this.getPosition());
+          });
+          }
+          }
+          });
+          });
+
+    var infowindow = new google.maps.InfoWindow();
+    $('#washmap').click(function(k){
+        $.getJSON("{% url 'washmap' %}?washmap="+k, function(jsonObj){
+            var length = jsonObj.washmap_location.length;
+            var washmap_x = 0;
+            var washmap_y = 0;
+            for(var a=0; a < length; a++){
+                washmap_location = jsonObj.washmap_location[a];
+                washmap_x = parseFloat(jsonObj.washmap_x[a]);
+                washmap_y = parseFloat(jsonObj.washmap_y[a]);
+               marker1 = new google.maps.Marker({
+                  id:a,
+                  position: new google.maps.LatLng(washmap_y, washmap_x),
+                  map: map,
+                  icon:icon1
+                 });
+              var infowindow = new google.maps.InfoWindow();
+              google.maps.event.addListener(marker1, 'click', (function(marker1, a) {
+              return function() {
+              infowindow.setContent(washmap_location+'에 위치한 장애인 화장실');
+              infowindow.open(map, marker1);
+              }
+              })(marker1, a));
+              if(marker1) {
+              marker1.addListener('click', function() {
+                  map.setZoom(15);
+                  map.setCenter(this.getPosition());
+                  });
+            }
+        }
+        });
+        })
+      //지도에 표시된 마커를 모두 지우고 지도만 보여줌.
+      $('#reset').click(function (){
+      location.reload();
+
+      });
+
+</script>
+  <style>
+
+    h2, div {
+    margin: auto;
+    text-align: center;
+    }
+
+    .gmnoprint, .gm-control-active.gm-fullscreen-control {
+    display: none;
+    }
+
+</style>
+
+<!--      function getLocation() {-->
+<!--          if (navigator.geolocation){-->
+<!--          navigator.geolocation.getCurrentPosition(hzCoords);-->
+<!--           }-->
+<!--          else { alert("Geolocation을 제공하지 않습니다.");-->
+<!--          }-->
+<!--      }-->
+
+<!--      function hzCoords(position) {-->
+<!--        var lat = position.coords.latitude;-->
+<!--        var lon = position.coords.longitude;-->
+<!--        var latlon = new google.maps.LatLng(lat, lon);-->
+<!--        var hzOptions = {-->
+<!--        center : latlon,-->
+<!--        zoom:12,-->
+<!--        mapTypeId:google.maps.MapTypeId.ROADMAP,-->
+<!--        };-->
+<!--        var map = new google.maps.Map(mapContainer, hzOptions);-->
+<!--        var marker = new google.maps.Marker({-->
+<!--           position : latlon,-->
+<!--           map : map,-->
+<!--           id: i-->
+<!--        });-->
+
+<!--        google.maps.event.addListener(marker, 'click', (function(marker, i) {-->
+<!--          return function() {-->
+<!--            infowindow.setContent('나의 현재 위치');-->
+<!--            infowindow.open(map, marker);-->
+<!--        }-->
+<!--        }) (marker, i));-->
+
+<!--        if(marker) {-->
+<!--         marker.addListener('click', function() {-->
+<!--          map.setZoom(15);-->
+<!--          map.setCenter(this.getPosition());-->
+<!--        });-->
+<!--      }-->

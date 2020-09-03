@@ -1,0 +1,112 @@
+{% extends "base2.html" %}
+{% block css %}
+{% endblock %}
+{% block content %}
+    <div class="container">
+            <div class="row mt-5">
+                <div class="col-12 text-center">
+                    <h1>회원가입</h1>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-12 text-center" style="color:red">
+                    {{error}}
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-12">
+                    <form method="POST" action="{% url 'register' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="userEmail">사용자 이메일</label>
+                            <input type="email" class="form-control" id="userEmail"  placeholder="사용자 이메일" name="userEmail" required>
+                            <small id="emailHelp" class="form-text text-muted">이메일 주소를 ID로 사용합니다.</small>
+                        </div>
+                        <div class="form-group">
+                            <div><label for="nickName" style="margin-right:5px;">닉네임</label><img id="nickimg" style=" display: inline-block; vertical-align: sub;" width="18" src="/static/assets/img/iyes.png"/><span id="nickspan" style="margin-left:3px;color:green">사용가능</span></div>
+                            <input type="text" class="form-control" id="nickName"  placeholder="사용자 이름" name="nickName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">비밀번호</label>
+                            <input type="password" class="form-control" id="password" placeholder="비밀번호" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="re-password">비밀번호 확인</label>
+                            <input type="password" class="form-control" id="re-password" placeholder="비밀번호 확인" name="re-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="photo">사진 선택</label>
+                            <img id="image_section"  width="100" src="/media/photo/default.jpg" alt="your image"/><br>
+                            <input type="file" class="form-control" id="photo"  placeholder="첨부할 이미지 선택" accept="image/*" name="photo"  required>
+                        </div>
+                        <div class="form-group">
+                            <label for="guardianName">보호자명</label>
+                            <input type="text" class="form-control" id="guardianName"  placeholder="보호자명" name="guardianName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="guardianCallNum">보호자 전화번호 입력</label>
+                            <input type="text" class="form-control" id="guardianCallNum" placeholder="보호자 전화번호 입력" name="guardianCallNum" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="guardianBasicMsg">보호자에게 보낼 문자 입력</label>
+                            <input type="text" class="form-control" id="guardianBasicMsg" placeholder="보호자에게 보낼 문자 입력" name="guardianBasicMsg" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">회원가입</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-12 text-center">
+            <a href="{% url 'index' %}">메인화면으로</a>
+            </div>
+     </div>
+
+<script>
+function readURL(input) {
+ if (input.files && input.files[0]) {
+  var reader = new FileReader();
+
+  reader.onload = function (e) {
+   $('#image_section').attr('src', e.target.result);
+  }
+
+  reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#photo").change(function(){
+   readURL(this);
+});
+
+jQuery('#nickName').on('input propertychange paste', function() {
+
+    $.getJSON("{% url 'checknick' %}?nickname="+$('#nickName').val().trim(), function(jsonObj) {
+<!--        alert(jsonObj.userable)-->
+        const domnickspan = $('#nickspan');
+        const domnickimg = $('#nickimg');
+
+        if (jsonObj.userable) {
+            domnickspan.text("사용가능");
+            domnickspan.css('color', 'green');
+            domnickimg.attr("src", "/static/assets/img/iyes.png");
+        } else {
+            domnickspan.text("사용중인 닉네임");
+            domnickspan.css('color', 'red');
+            domnickimg.attr("src", "/static/assets/img/ino.png");
+        }
+
+        });
+
+});
+</script>
+
+
+
+
+
+
+
+{% endblock %}
+
+
