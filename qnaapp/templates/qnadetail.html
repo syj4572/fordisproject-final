@@ -6,14 +6,19 @@
 <section class="projects-section bg-light" id="board">
 <div class="container">
 
-    <h1>Q & A</h1>
+    <h1><br>Q & A</br></h1>
 
     <br>
 
-    <h2>제목 : {{qnaboard.title}}</h2>
+    <div class="container">
+
+        <h2 >제목 : {{qnaboard.title}}</h2>
+        {% if qnaboard.admin_content == "" %}<span class="badge badge-danger">대기</span>{% else %}<span class="badge badge-success">완료</span>{% endif %}
+    </div>
 
     <br>
 
+    <div class="container">
     <div class="form-group">
         <label>작성자</label>
         <div class="form-control">{{qnaboard.qnawriter.nickName}}님</div>
@@ -26,12 +31,13 @@
         <label>내용</label>
         <textarea class="form-control">{{qnaboard.content}}</textarea>
     </div>
+    </div>
 
 
     <button type="button" class="btn btn-primary" onclick="location.href='{% url 'qnaread' %}'">목록</button>
 
-
-        <hr style="2px;">
+    <hr style="2px;">
+    <br>
         <p><h2>"{{qnaboard.title}}"에 대한 관리자의 답글</h2></p>
 
 
