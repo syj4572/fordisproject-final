@@ -18,6 +18,22 @@
       align-items: center
     }
 
+
+<!--    .panel{-->
+<!--      display:inline-block;-->
+<!--      position:relative;-->
+<!--    }-->
+
+<!--    .btn-secondary{-->
+<!--      position:absolute;-->
+<!--      bottom:10px;-->
+<!--      right:10px;-->
+<!--    }-->
+
+<!--    .form-control{-->
+<!--      display:block;-->
+<!--    }-->
+
 {% endblock %}
 
 {% block content %}
@@ -40,14 +56,17 @@
 {% if btype == 'R' %}
     <div class="container" style="width:350px; height: 300px; margin:0px; display: inline-block;">
 
-  <p>{{ article.updated_at | date:'Y-m-d G:i' }} 조회수: {{ article.viewcnt }} 댓글: <span style="color:red;">{{ article.cmtcnt}}</span></p>
-  <div class="card" style="width:300px; ">
+  <br>
+<div class="container" style="width:363px; height: 500px; margin:0px; display: inline-block;">
+  <h4>{{ article.title }}</h4>
+  <div class="card" style="width:360px; ">
     <img class="card-img-top" src="/static/media/{{ article.reportPhoto }}" alt="Card image" style="width:100%">
     <div class="card-body">
-      <h4 class="card-title">{{ article.title }}</h4>
         <p class="card-text">위치: {{ article.reportAddress }}</p>
     </div>
   </div>
+  <br>
+</div>
   <br>
 </div>
 {% endif %}
@@ -131,7 +150,7 @@
                             <img class="image_section" width="100" src="{{ comment2.c2writer.photo.url }}" alt="" /></a>
                           </div>
                           <div>
-                              <div style="margin-bottom:2px; display: inline-block"><b>[{{ comment2.c2writer.nickName }}]님</b><span style="color:red">{% if article.awriter == comment2.c2writer %}(작성자){% endif %}</span></div>
+                              <div id="comment2name" style="margin-bottom:2px; display: inline-block"><b>[{{ comment2.c2writer.nickName }}]님</b><span style="color:red">{% if article.awriter == comment2.c2writer %}(작성자){% endif %}</span></div>
                               <div>{{ comment.updated_at }}</div>
                           </div>
                         </div>

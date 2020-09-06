@@ -85,6 +85,7 @@ class Comment2(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
 
+
 class Qnaboard(models.Model):
     qnawriter = models.ForeignKey('Users', db_column='userEmail', blank=False, null=False, on_delete=models.CASCADE)
     title = models.CharField(max_length=20)

@@ -200,8 +200,8 @@ def comment_create(request, btype, pk):
     comment = Comment(content=content, cwriter = user, article=article)
     comment.save()
     # return redirect('detail', pk)
-    #return redirect('{}#movec_{}'.format(resolve_url('detail', pk, 0), comment.pk))
-    return redirect('{}#{}'.format(resolve_url('detail', btype, pk), 'board'))
+    return redirect('{}#movec_{}'.format(resolve_url('detail', btype, pk), comment.pk))
+    #return redirect('{}#{}'.format(resolve_url('detail', btype, pk), 'board'))
 
 
 def comment2_create(request, btype, ppk, pk):
@@ -211,25 +211,39 @@ def comment2_create(request, btype, ppk, pk):
     comment2 = Comment2(content=content, c2writer = user, comment=comment)
     comment2.save()
     # return redirect('detail', ppk)
-    #return redirect('{}#movec2_{}'.format(resolve_url('detail', ppk, 0), comment2.pk))
-    return redirect('{}#{}'.format(resolve_url('detail', btype, ppk), 'board'))
+    return redirect('{}#movec_{}'.format(resolve_url('detail', btype, ppk), comment.pk))
+    #return redirect('{}#{}'.format(resolve_url('detail', btype, ppk), 'board'))
 
 
 def update(request, btype, pk):
-        if 'user' in request.session:
+        if logincheck(request)['loginyn']:
             article = Article.objects.get(pk=pk)
             if request.method == 'POST':
                 title = request.POST['title']
                 content = request.POST['content']
+                photochanged = request.POST['photochangedid']
                 article.title = title
                 article.content = content
+                if btype == 'R':
+                    if photochanged == 'Y':
+                        article.reportPhoto = request.FILES['reportphoto']
+                        article.reportPhotoId = logincheck(request)['useremail'] + datetime.now().isoformat()
+                        article.reportAddress = request.POST['reportaddress']
+                    else:
+                        article.reportAddress = request.POST['reportaddress']
+
+
                 article.save()
+
                 # return redirect('detail', article.pk)
                 return redirect('{}#{}'.format(resolve_url('detail', btype, article.pk), 'board'))
             else:
+                article3 = Article.objects.filter(id=pk).aggregate(
+                    cmtcnt=Count("comment__id", distinct=True) + Count("comment__comment2__id", distinct=True))  # 댓글수용
                 context = {
                     'article': article,
-                    'btype': btype
+                    'btype': btype,
+                    'article3':article3
                 }
                 context.update(logincheck(request))
                 return render(request, 'update.html', context)
@@ -238,7 +252,7 @@ def update(request, btype, pk):
 
 
 def comment_update(request, btype, article_pk, comment_pk):
-    if 'user' in request.session:
+    if logincheck(request)['loginyn']:
         comment = Comment.objects.get(pk=comment_pk)
         if request.method == 'POST':
             content = request.POST['content']
@@ -258,7 +272,7 @@ def comment_update(request, btype, article_pk, comment_pk):
 
 
 def comment2_update(request, btype, article_pk, comment_pk, comment2_pk):
-    if 'user' in request.session:
+    if logincheck(request)['loginyn']:
         comment2 = Comment2.objects.get(pk=comment2_pk)
         if request.method == 'POST':
             comment = request.POST['content']
@@ -343,6 +357,18 @@ def checknick(request):
         jsonContent = {"userable" : userable}
         return JsonResponse( jsonContent, json_dumps_params={'ensure_ascii': False})
 
+
+def checkuseremail(request):
+    useremail = request.GET.get("useremail")
+    try:
+        user = Users.objects.get(userEmail=useremail)
+    except Users.DoesNotExist:
+        userable = True
+    else:
+        userable = False
+
+    jsonContent = {"userable": userable}
+    return JsonResponse(jsonContent, json_dumps_params={'ensure_ascii': False})
 
 def getaccesstoken(request):
     url = "https://kauth.kakao.com/oauth/token"         # 수정 X

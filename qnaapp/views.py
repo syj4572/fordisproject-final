@@ -1,13 +1,28 @@
 from django.contrib.auth.hashers import make_password, check_password
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, resolve_url
 from django.core.paginator import Paginator
-
-
-
-
 
 # Create your views here.
 from fordisapp.models import Users, Qnaboard
+
+# 사용자 로긴 체크 후 사용자 정보를 모두 context에 담음
+def logincheck(request) :
+    context = None
+    if 'user' in request.session:
+        user = Users.objects.get(userEmail=request.session.get('user'))
+
+        context = {'loginyn':True,
+                   'useremail':user.userEmail,
+                   'nickname': user.nickName,
+                   'photopath': user.photo.url,
+                   'guardianName':  user.guardianName,
+                   'guardianCallNum': user.guardianCallNum,
+                   'guardianBasicMsg': user.guardianBasicMsg
+                   }
+        return context
+    else:
+        context = {'loginyn': False}
+        return context
 
 
 def qnacreate(request):
@@ -20,9 +35,10 @@ def qnacreate(request):
         #tmpuser = Users.objects.get(userEmail='syj0510@naver.com')
         #qnadata = Qnaboard(title=title, nickName=nickName, content=content, qnawriter=tmpuser)
         qnadata.save()
-        return redirect("qnaread")
+        #return redirect("qnaread")
+        return redirect('{}#{}'.format(resolve_url('qnaread'), 'board'))
     else:
-        return render(request, 'qnacreate.html', None)
+        return render(request, 'qnacreate.html', logincheck(request))
 
 def admin_answer(request, pk):
     admin = Qnaboard.objects.get(pk=pk)
@@ -43,13 +59,16 @@ def qnaread(request):
     paginator = Paginator(qnalist[::-1], 5)
     qnalistpage = paginator.get_page(page)
     context = {"qnalist": qnalistpage}
-    return render(request, "qnaboard.html", context)
+    context.update(logincheck(request))
+    return render(request, 'qnaboard.html', context)
+
 
 def qnadetail(request, pk):
     qnaboard = Qnaboard.objects.get(pk=pk)
     context = {"qnaboard": qnaboard,
                "useremail":request.session['user'],
                 }
+    context.update(logincheck(request))
     return render(request, 'qnadetail.html', context)
 
 

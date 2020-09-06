@@ -36,6 +36,7 @@ urlpatterns = [
     path("search2/<slug:btype>/<content>", views.search2, name="search2"),
 
     path("checknick/", views.checknick, name="checknick"),
+    path("checkuseremail/", views.checkuseremail, name="checkuseremail"),
 
     path("getaccesstoken/", views.getaccesstoken, name="getaccesstoken"),
 ]

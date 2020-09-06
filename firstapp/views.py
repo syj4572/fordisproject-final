@@ -1,12 +1,35 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, FileResponse
 from .models import Datalist
+from fordisapp.models import *
+
 import csv
 import math
+
+# 사용자 로긴 체크 후 사용자 정보를 모두 context에 담음
+def logincheck(request) :
+    context = None
+    if 'user' in request.session:
+        user = Users.objects.get(userEmail=request.session.get('user'))
+
+        context = {'loginyn':True,
+                   'useremail':user.userEmail,
+                   'nickname': user.nickName,
+                   'photopath': user.photo.url,
+                   'guardianName':  user.guardianName,
+                   'guardianCallNum': user.guardianCallNum,
+                   'guardianBasicMsg': user.guardianBasicMsg
+                   }
+        return context
+    else:
+        context = {'loginyn': False}
+        return context
+
 
 def mapping(request):
     maplist = Datalist.objects.all()
     context = {"maplist": maplist}
+    context.update(logincheck(request))
     return render(request, "map.html",context)
 
 def pointing(request):
