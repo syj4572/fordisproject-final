@@ -59,7 +59,7 @@
                 </div>
             </div>
             <div class="col-12 text-center">
-            <a href="{% url 'index' %}#board">메인화면으로</a>
+            <a href="{% url 'index' %}">메인화면으로</a>
             </div>
      </div>
 
@@ -116,7 +116,7 @@ jQuery('#userEmail').on('input propertychange paste', function() {
             domuseremailimg.attr("src", "/static/assets/img/iyes.png");
             document.getElementById("registersubmit").disabled = false;
         } else {
-            domuseremailspan.text("사용중인 닉네임");
+            domuseremailspan.text("사용중인 이메일");
             domuseremailspan.css('color', 'red');
             domuseremailimg.attr("src", "/static/assets/img/ino.png");
             document.getElementById("registersubmit").disabled = true;
@@ -139,7 +139,7 @@ jQuery('#userEmail').on('input propertychange paste', function() {
           height: 10px;
           min-height: 35rem;
           padding: 15rem 0;
-          background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 75%, #000000 100%), url("/static/assets/img/1_bg-masthead2.jpg");
+          background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 75%, #000000 100%), url("/static/assets/img/disrun.jpg");
           background-position: center;
           background-repeat: no-repeat;
           background-attachment: scroll;
